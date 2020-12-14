@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_product_brand,product_brand,model_product_brand,sales_team.group_sale_manager,1,1,1,1
+access_product_type,product_type,model_product_type,sales_team.group_sale_manager,1,1,1,1
+access_product_location,product_location,model_product_location,sales_team.group_sale_manager,1,1,1,1

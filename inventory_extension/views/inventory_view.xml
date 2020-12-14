@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="product_template_only_form_view_inherit">
+        <field name="name">product.template.form</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='barcode']" position="after">
+                <field name="brand_id" />
+                <field name="bu_br" />
+                <field name="department_id" />
+                <field name="location_id" />
+                <field name="type_id" />
+                <field name="user_type" />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Brand -->
+
+    <record model="ir.ui.view" id="view_product_brands_tree">
+        <field name="name">Product Brand List</field>
+        <field name="model">product.brand</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_form_product_brand">
+        <field name="name">Product Brand Form</field>
+        <field name="model">product.brand</field>
+        <field name="arch" type="xml">
+            <form string="Product Brand">
+                <group>
+                    <field name="name" />
+                </group>
+            </form>
+        </field>
+    </record>
+    <record id="action_product_brand" model="ir.actions.act_window">
+        <field name="name">Product Brand</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">product.brand</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_product_brands_tree" />
+    </record>
+
+    <menuitem id="menu_product_conf" name="Product Configuration" parent="stock.menu_stock_config_settings" sequence="90" />
+    <menuitem id="menu_add_product_brand" name="Brand" action="action_product_brand" parent="menu_product_conf" sequence="1" />
+
+    <!-- Type -->
+
+    <record model="ir.ui.view" id="view_product_types_tree">
+        <field name="name">Product Type List</field>
+        <field name="model">product.type</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_form_product_type">
+        <field name="name">Product Type Form</field>
+        <field name="model">product.type</field>
+        <field name="arch" type="xml">
+            <form string="Product Type">
+                <group>
+                    <field name="name" />
+                </group>
+            </form>
+        </field>
+    </record>
+    <record id="action_product_type" model="ir.actions.act_window">
+        <field name="name">Product Type</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">product.type</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_product_types_tree" />
+    </record>
+
+    <menuitem id="menu_add_product_type" name="Product Type" action="action_product_type" parent="menu_product_conf" sequence="1" />
+
+<!-- Location -->
+
+    <record model="ir.ui.view" id="view_product_locations_tree">
+        <field name="name">Product Location List</field>
+        <field name="model">product.location</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_form_product_location">
+        <field name="name">Product Location Form</field>
+        <field name="model">product.location</field>
+        <field name="arch" type="xml">
+            <form string="Product Location">
+                <group>
+                    <field name="name" />
+                </group>
+            </form>
+        </field>
+    </record>
+    <record id="action_product_location" model="ir.actions.act_window">
+        <field name="name">Product Location</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">product.location</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_product_locations_tree" />
+    </record>
+
+    <menuitem id="menu_add_product_location" name="Product Location" action="action_product_location" parent="menu_product_conf" sequence="1" />
+
+ </odoo>
