@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record model="ir.ui.view" id="view_product_imiport_tree">
+	        <field name="name">Product Import</field>
+	        <field name="model">dataimport.product</field>
+	        <field name="arch" type="xml">
+	            <tree>
+	                <field name="name"/>
+	            </tree>
+	        </field>
+	    </record>
+	    <record model="ir.ui.view" id="view_form_product_imiport">
+	        <field name="name">Product Import Form</field>
+	        <field name="model">dataimport.product</field>
+	        <field name="arch" type="xml">
+	            <form string="Employee" version="7.0">
+                    <header>
+                        <button name="import_data" string="Import Product Data" type="object"
+                                class="oe_highlight" />
+                    </header>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="import_date"/>
+                            <field name="import_file" filename="import_fname"/>
+                            <field name="import_fname" invisible="1" class="oe_inline oe_right"/>
+                            <field name="note" readonly="1"/>
+                        </group>
+                    </sheet>
+                </form>
+	        </field>
+	    </record>
+	    <record id="action_data_import" model="ir.actions.act_window">
+	        <field name="name">Product Import</field>
+	        <field name="type">ir.actions.act_window</field>
+	        <field name="res_model">dataimport.product</field>
+	        <field name="view_mode">tree,form</field>
+	        <field name="view_id" ref="view_product_imiport_tree" />
+	    </record>
+	
+	    <menuitem id="menu_add_product_import" name="Product Import" action="action_data_import" parent="menu_product_conf" sequence="5" />
+ </odoo>

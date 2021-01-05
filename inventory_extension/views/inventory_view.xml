@@ -7,14 +7,16 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='barcode']" position="after">
                 <field name="brand_id" />
-                <field name="bu_br" />
+                <field name="bu_br_id" />
                 <field name="department_id" />
-                <field name="location_id" />
+                <field name="product_location_id" />
                 <field name="type_id" />
                 <field name="user_type" />
             </xpath>
+              
         </field>
     </record>
+    
 
     <!-- Brand -->
 
@@ -112,5 +114,65 @@
     </record>
 
     <menuitem id="menu_add_product_location" name="Product Location" action="action_product_location" parent="menu_product_conf" sequence="1" />
+    
+    <record model="ir.ui.view" id="view_bu_br_tree">
+        <field name="name">BU/BR/DIV</field>
+        <field name="model">umg.bu</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_form_bu_br">
+        <field name="name">BU/BR/DIV Form</field>
+        <field name="model">umg.bu</field>
+        <field name="arch" type="xml">
+            <form string="BU/BR/DIV">
+                <group>
+                    <field name="name" />
+                </group>
+            </form>
+        </field>
+    </record>
+    <record id="action_bu_br" model="ir.actions.act_window">
+        <field name="name">BU/BR/DIV</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">umg.bu</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_bu_br_tree" />
+    </record>
 
+    <menuitem id="menu_add_bu_br" name="BU/BR/DIV" action="action_bu_br" parent="menu_product_conf" sequence="3" />
+    
+    <record model="ir.ui.view" id="view_department_tree">
+        <field name="name">Department</field>
+        <field name="model">umg.department</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_form_department">
+        <field name="name">Department</field>
+        <field name="model">umg.department</field>
+        <field name="arch" type="xml">
+            <form string="Department">
+                <group>
+                    <field name="name" />
+                </group>
+            </form>
+        </field>
+    </record>
+    <record id="action_department" model="ir.actions.act_window">
+        <field name="name">Department</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">umg.department</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_department_tree" />
+    </record>
+
+    <menuitem id="menu_add_department" name="Department" action="action_department" parent="menu_product_conf" sequence="4" />
+    
  </odoo>

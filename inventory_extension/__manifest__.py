@@ -13,6 +13,7 @@
     'data': [
         'security/ir.model.access.csv',
         'views/inventory_view.xml',
+        'views/product_import_view.xml',
     ],
     'installable': True,
     'auto_install': False,
