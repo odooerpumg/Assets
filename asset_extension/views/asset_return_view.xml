@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<record model="ir.ui.view" id="view_asset_return_tree">
+	        <field name="name">Asset Return List</field>
+	        <field name="model">return.asset</field>
+	        <field name="arch" type="xml">
+	            <tree>
+	                <field name="return_date"/>
+	                <field name="return_emp_id"/>
+	                <field name="emp_no"/>
+	                <field name="department_id"/>
+	                <field name="bu_id"/>
+	                <field name="return_person_id"/>
+                	<field name="ga_it" />
+                	<field name="state"/>
+	            </tree>
+	        </field>
+	    </record>
+	    <record model="ir.ui.view" id="view_form_asset_return">
+	        <field name="name">Asset Return Form</field>
+	        <field name="model">return.asset</field>
+	        <field name="arch" type="xml">
+	            <form string="Asset Return">
+	                <header>
+	                    <button string="Request" name="request" states="draft" type="object" class="oe_highlight"/>
+	
+	                    <button string="Manager Approved" name="manager_approve" states="request" type="object" class="oe_highlight" groups="asset_extension.group_manager" />
+	
+	                    <button string="GA Approved" name="ga_approve" states="manager_approve" type="object" class="oe_highlight" groups="asset_extension.group_ga_pic" />
+	
+	                    <button string="GA Manager Approved" name="ga_manager_approve" states="ga_approve" type="object" class="oe_highlight" groups="asset_extension.group_ga_manager" />
+						 <field name="is_it"  invisible="1" />
+	                    <button string="IT Approved" name="it_approve" states="ga_manager_approve" type="object" class="oe_highlight" attrs="{'invisible':[('is_it', '!=', True)]}" groups="asset_extension.group_it_pic,asset_extension.group_admin" />
+
+                    <button string="IT Manager Approved" name="it_manager_approve" states="it_approve" type="object" class="oe_highlight" groups="asset_extension.group_it_manager,asset_extension.group_admin" />
+	
+<!-- 	                    <button string="Management Approved" name="approve" states="it_manager_approve,ga_manager_approve" type="object" class="oe_highlight" groups="asset_extension.group_management" /> -->
+	
+	                    <button string="Send to Draft" name="draft" states="manager_approve,ga_approve,ga_manager_approve,it_approve,it_manager_approve,validate" type="object" class="oe_highlight"/>
+	
+	                    <button string="Refuse" name="refuse" states="manager_approve,ga_approve,ga_manager_approve,it_approve,it_manager_approve,validate" type="object" class="oe_highlight"/>
+	
+<!-- 	                     attrs="{'invisible':[('state', 'not in',('request','validate'))]}" -->
+	
+	                    <button string="Cancel" name="cancel" states="manager_approve,ga_approve,ga_manager_approve,it_approve,it_manager_approve,validate" type="object" />
+	
+	                    <field name="state" widget="statusbar" statusbar_visible="draft,request,manager_approve,ga_approve,ga_manager_approve,validate" statusbar_colors='{"draft":"blue","request":"blue","manager_approve":"blue","ga_approve":"blue","ga_manager_approve":"blue","it_approve":"blue","it_manager_approve":"blue","validate":"blue","refuse":"red"}'/>
+	                </header>
+	                <sheet>
+	                    <group name="request_info" string="Return Information">
+	                        <group>
+	                            <field name="return_date" />
+	                            <field name="return_emp_id" options="{'no_create': True}" />
+	                            <field name="emp_no"  invisible="0" />
+	                            <field name="ph_no" />
+	                            <field name="department_id" options="{'no_create': True}" />
+	                            <field name="bu_id" options="{'no_create': True}" />
+	                            <field name="return_person_id"/>
+	                            <field name="is_ga"  invisible="1" />
+	                            <field name="ga_it" required="1" />
+	                        </group>
+	                    </group>
+	                    <notebook>
+	                        <page string="Asset Return Line" name="return_line">
+	                            <group>
+	                                <field name="line_ids" nolabel="1">
+	                                    <tree editable="bottom">
+	                                        <field name="name" />
+	                                        <field name="type_id" />
+	                                        <field name="qr_code" />
+	                                        <field name="qty" />
+	                                        <field name="current_value"/>
+	                                        <field name="conditions"/>
+	                                        <field name="reason" />
+	                                        <field name="remark" />
+	                                    </tree>
+	                                </field>
+	                            </group>
+	                        </page>
+	                    </notebook>
+	                </sheet>
+	            </form>
+	        </field>
+	    </record>
+	    <record id="action_asset_return" model="ir.actions.act_window">
+	        <field name="name">Asset Return</field>
+	        <field name="type">ir.actions.act_window</field>
+	        <field name="res_model">return.asset</field>
+	        <field name="view_mode">tree,form</field>
+	        <field name="view_id" ref="view_asset_return_tree" />
+	    </record>
+	
+	    <menuitem id="menu_asset_return" name="Assets Return" action="action_asset_return" parent="menu_asset_menu" sequence="2" />
+</odoo>	    
+	    

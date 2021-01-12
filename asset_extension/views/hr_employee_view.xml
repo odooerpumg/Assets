@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record model="ir.ui.view" id="view_employee_form_inherit">
+		<field name="name">Employees</field>
+		<field name="model">hr.employee</field>
+		<field name="inherit_id" ref="hr.view_employee_form"/>
+		<field name="arch" type="xml">
+			<xpath expr="//field[@name='address_id']" position="replace">
+				<field name="location_id" />
+				<field name="emp_no" />
+			</xpath>
+<!-- 			<xpath expr="//field[@name='km_home_work']" position="after"> -->
+<!-- 				<field name="emp_no" /> -->
+<!-- 			</xpath> -->
+		</field>
+	</record>
+	<record model="ir.ui.view" id="view_work_location_tree">
+        <field name="name">Work Location</field>
+        <field name="model">work.location</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_form_work_location">
+        <field name="name">Work Location</field>
+        <field name="model">work.location</field>
+        <field name="arch" type="xml">
+            <form string="Work Location">
+                <group>
+                    <field name="name" />
+                </group>
+            </form>
+        </field>
+    </record>
+    <record id="action_work_location" model="ir.actions.act_window">
+        <field name="name">Work Location</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">work.location</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_work_location_tree" />
+    </record>
+
+    <menuitem id="menu_add_work_location" name="Work Location" action="action_work_location" parent="menu_configuration_menu" sequence="4" />
+</odoo>

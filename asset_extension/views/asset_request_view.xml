@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<!-- Main Menu -->
+
+    <menuitem id="menu_asset" name="Assets" web_icon="asset_extension,static/description/icon.png" sequence="20" />
+    <menuitem id="menu_asset_menu" name="Assets" parent="menu_asset" sequence="1" />
+    <menuitem id="menu_reporting" name="Reporting" parent="asset_extension.menu_asset" sequence="3" />
+    <menuitem id="menu_configuration_menu" name="Configuration" parent="menu_asset" sequence="4" />
+
+<!-- Asset Request -->
+    <record model="ir.ui.view" id="view_asset_request_tree">
+        <field name="name">Asset Request List</field>
+        <field name="model">asset.request</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="request_date"/>
+                <field name="request_id"/>
+                <field name="emp_no"/>
+                <field name="department_id"/>
+                <field name="bu_id"/>
+                <field name="request_person_id"/>
+                <field name="asset_type_id"/>
+                <field name="state"/>
+                <field name="ga_it" />
+            </tree>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_form_asset_request">
+        <field name="name">Asset Request Form</field>
+        <field name="model">asset.request</field>
+        <field name="arch" type="xml">
+            <form string="Asset Request">
+                <header>
+                    <button string="Request" name="request" states="draft" type="object" class="oe_highlight"/>
+
+                    <button string="Manager Approved" name="manager_approve" states="request" type="object" class="oe_highlight" groups="asset_extension.group_manager,asset_extension.group_admin" />
+
+                    <button string="GA Approved" name="ga_approve" states="manager_approve" type="object" class="oe_highlight" groups="asset_extension.group_ga_pic,asset_extension.group_admin" />
+
+                    <button string="GA Manager Approved" name="ga_manager_approve" states="ga_approve" type="object" class="oe_highlight" groups="asset_extension.group_ga_manager,asset_extension.group_admin" />
+                            
+                    <field name="is_it"  invisible="1" />
+
+                    <button string="IT Approved" name="it_approve" states="ga_manager_approve" type="object" class="oe_highlight" attrs="{'invisible':[('is_it', '!=', True)]}" groups="asset_extension.group_it_pic,asset_extension.group_admin" />
+
+                    <button string="IT Manager Approved" name="it_manager_approve" states="it_approve" type="object" class="oe_highlight" groups="asset_extension.group_it_manager,asset_extension.group_admin" />
+
+<!--                     <field name="is_management" invisible="1" /> -->
+
+<!--                     <button string="Management Approved" name="approve" states="it_manager_approve,ga_manager_approve" type="object" attrs="{'invisible':[('is_management', '!=', True)]}" class="oe_highlight" groups="asset_extension.group_management,asset_extension.group_admin" /> -->
+
+                    <button string="Send to Draft" name="draft" states="manager_approve,ga_approve,ga_manager_approve,it_approve,it_manager_approve,validate" type="object" class="oe_highlight" groups="asset_extension.group_ga_pic,asset_extension.group_admin"/>
+
+                    <button string="Refuse" name="refuse" states="manager_approve,ga_approve,ga_manager_approve,it_approve,it_manager_approve,validate" type="object" class="oe_highlight"/>
+<!-- groups="asset_extension.group_manager,asset_extension.group_ga_pic,asset_extension.group_ga_manager,asset_extension.group_it_manager,asset_extension.group_management,asset_extension.group_admin"  -->
+ <!-- groups="asset_extension.group_all_user,asset_extension.group_manager,asset_extension.group_ga_pic,asset_extension.group_ga_manager,asset_extension.group_it_pic,asset_extension.group_it_manager,asset_extension.group_management,asset_extension.group_admin" -->
+                     <!-- attrs="{'invisible':[('state', 'not in',('request','validate'))]}" -->
+
+                    <button string="Cancel" name="cancel" states="manager_approve,ga_approve,ga_manager_approve,it_approve,it_manager_approve,validate" type="object" />
+
+                    <field name="state" widget="statusbar" statusbar_visible="draft,request,manager_approve,ga_approve,ga_manager_approve,validate" statusbar_colors='{"draft":"blue","request":"blue","manager_approve":"blue","ga_approve":"blue","ga_manager_approve":"blue","it_approve":"blue","it_manager_approve":"blue","validate":"blue","refuse":"red"}'/>
+                </header>
+                <sheet>
+<!--                     <div name="button_box" class="oe_button_box"> -->
+<!--                         <button name="%(product.product_template_action)d" class="oe_stat_button" icon="fa-building-o" type="action"  attrs="{'invisible':[('is_ga', '!=', True)]}"> -->
+<!--                             Products -->
+<!--                             <field name="invoice_count" widget="statinfo" string="Invoices"/> -->
+<!--                         </button> -->
+<!--                     </div> -->
+                    <group name="request_info" string="Request Information">
+                        <group>
+                            <field name="request_date" />
+                            <field name="request_id" options="{'no_create_edit': True}" required="1" />
+                            <field name="emp_no"  invisible="0" />
+                            <field name="department_id" options="{'no_create_edit': True}" />
+                            <field name="ph_no" />
+                            <field name="bu_id" options="{'no_create_edit': True}" />
+                            <field name="location_id" options="{'no_create_edit': True}" />
+                            <field name="request_person_id"/>
+                            <field name="ga_it" required="1" />
+                            <field name="is_ga"  invisible="1" />
+                            <field name="new_old" attrs="{'invisible':[('is_ga', '=', False)],'required': [('is_ga', '=', True)]}" />
+                        </group>
+                    </group>
+                    <group name="arrange_ga" string="Arrange from GA Department" attrs="{'invisible':[('is_ga', '=', False)]}">
+                        <group>
+                            <field name="asset_type_id" attrs="{'invisible':[('new_old', 'not in', ('new','old'))]}" options="{'no_create_edit': True}" />
+                            <field name="model_id" attrs="{'invisible':[('new_old', 'not in', ('new','old'))]}" options="{'no_create_edit': True}" />
+                            <field name="asset_condition" attrs="{'invisible':[('new_old', '=', 'new')]}" />
+                            <field name="prev_bu_id" attrs="{'invisible':[('new_old', '=', 'new')]}" options="{'no_create_edit': True}" />
+                            <field name="other_info" attrs="{'invisible':[('new_old', 'not in', ('new','old'))]}" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Asset Request Line" name="request_line">
+                            <group>
+                                <field name="line_ids" nolabel="1">
+                                    <tree editable="bottom">
+                                        <field name="name" />
+                                        <field name="qty" />
+                                        <field name="unit_price" />
+                                        <field name="remark" />
+                                    </tree>
+                                </field>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_asset_request" model="ir.actions.act_window">
+        <field name="name">Asset Request</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">asset.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_asset_request_tree" />
+    </record>
+
+    <menuitem id="menu_asset_request" name="Assets Request" action="action_asset_request" parent="menu_asset_menu" sequence="1" />
+
+    <!-- Type -->
+
+    <record model="ir.ui.view" id="view_asset_types_tree">
+        <field name="name">Asset Type List</field>
+        <field name="model">asset.types</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_form_asset_type">
+        <field name="name">Asset Type Form</field>
+        <field name="model">asset.types</field>
+        <field name="arch" type="xml">
+            <form string="Asset Type">
+                <group>
+                    <field name="name" />
+                </group>
+            </form>
+        </field>
+    </record>
+    <record id="action_asset_type" model="ir.actions.act_window">
+        <field name="name">Asset Type</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">asset.types</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_asset_types_tree" />
+    </record>
+
+    <menuitem id="menu_add_asset_type" name="Asset Types" action="action_asset_type" parent="menu_configuration_menu" sequence="1" />
+
+    <!-- <menuitem id="menu_add_asset_type_in_reporting" name="Asset Types" action="action_asset_type" parent="menu_reporting" sequence="1" /> -->
+
+<!-- Location -->
+
+    <record model="ir.ui.view" id="view_asset_asset_model_division_tree">
+        <field name="name">BU BR Division List</field>
+        <field name="model">asset.bu.br.division</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_form_asset_asset_model_division">
+        <field name="name">BU BR Division Form</field>
+        <field name="model">asset.bu.br.division</field>
+        <field name="arch" type="xml">
+            <form string="BU BR Division">
+                <group>
+                    <field name="name" />
+                </group>
+            </form>
+        </field>
+    </record>
+    <record id="action_asset_bu_br_division" model="ir.actions.act_window">
+        <field name="name">BU BR Division</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">asset.bu.br.division</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_asset_asset_model_division_tree" />
+    </record>
+
+    <menuitem id="menu_add_asset_asset_model_division" name="BU BR Division" action="action_asset_bu_br_division" parent="menu_configuration_menu" sequence="1" />
+    
+    <record model="ir.ui.view" id="view_asset_model_tree">
+        <field name="name">Asset Model Tree</field>
+        <field name="model">asset.model</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_form_asset_model">
+        <field name="name">Asset Model Form</field>
+        <field name="model">asset.model</field>
+        <field name="arch" type="xml">
+            <form string="Asset Model">
+                <group>
+                    <field name="name" />
+                </group>
+            </form>
+        </field>
+    </record>
+    <record id="action_asset_model" model="ir.actions.act_window">
+        <field name="name">Asset Model</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">asset.model</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_asset_model_tree" />
+    </record>
+
+    <menuitem id="menu_add_asset_model" name="Asset Model" action="action_asset_model" parent="menu_configuration_menu" sequence="3" />
+    
+ </odoo>
