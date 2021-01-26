@@ -82,7 +82,7 @@
                             <field name="new_old" attrs="{'invisible':[('is_ga', '=', False)],'required': [('is_ga', '=', True)]}" />
                         </group>
                     </group>
-                    <group name="arrange_ga" string="Arrange from GA Department" attrs="{'invisible':[('is_ga', '=', False)]}">
+                    <group name="arrange_ga" string="Arrange from GA Department" groups="asset_extension.group_ga_pic,asset_extension.group_ga_manager,asset_extension.group_it_pic,asset_extension.group_it_manager,asset_extension.group_management,asset_extension.group_admin">
                         <group>
                             <field name="asset_type_id" attrs="{'invisible':[('new_old', 'not in', ('new','old'))]}" options="{'no_create_edit': True}" />
                             <field name="model_id" attrs="{'invisible':[('new_old', 'not in', ('new','old'))]}" options="{'no_create_edit': True}" />
@@ -97,6 +97,7 @@
                                 <field name="line_ids" nolabel="1">
                                     <tree editable="bottom">
                                         <field name="name" />
+                                        <field name="qr_code" required="True"/>
                                         <field name="qty" />
                                         <field name="unit_price" />
                                         <field name="remark" />

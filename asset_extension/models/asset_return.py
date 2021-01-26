@@ -14,12 +14,16 @@ from odoo.osv import expression
 
 class AssetReturn(models.Model):
     _name = 'return.asset'
-
+    
+    def _get_default_name(self):
+        resp_obj = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)])
+        return resp_obj
+    
     return_date = fields.Date('Return Date', default=fields.Date.today)
-    return_emp_id = fields.Many2one('hr.employee',string='PIC Name')
+    return_emp_id = fields.Many2one('hr.employee',string='PIC Name' ,default=_get_default_name)
     return_person_id = fields.Many2one('hr.employee',string='Return by Employee')
-    email = fields.Char(string='PIC Email')
-    emp_no = fields.Char(string='Employee Number')
+    email = fields.Char(related='return_emp_id.work_email',string='PIC Email')
+    emp_no = fields.Integer(related='return_emp_id.emp_no',string='Employee Number')
     ph_no = fields.Char('Phone Number')
     department_id = fields.Many2one('hr.department', string='Department Name')
     bu_id = fields.Many2one('asset.bu.br.division',string='BU / BR / Division Name')
@@ -96,7 +100,7 @@ class AssetReturnLine(models.Model):
     qty = fields.Integer('Quantity',default=1)
     current_value = fields.Float('Current Value')
     qr_code = fields.Char("QR Code")
-    conditions = fields.Selection([
+    product_condi = fields.Selection([
                                   ('damage', 'Damage'),
                                   ('good', 'Good Condition'),
                                   ],groups="asset_extension.group_ga_pic,asset_extension.group_ga_manager,asset_extension.group_it_pic,asset_extension.group_it_manager,asset_extension.group_management,asset_extension.group_admin")
@@ -105,13 +109,14 @@ class AssetReturnLine(models.Model):
                                   ('user_fault', 'User Fault'),
                                   ],groups="asset_extension.group_ga_pic,asset_extension.group_ga_manager,asset_extension.group_it_pic,asset_extension.group_it_manager,asset_extension.group_management,asset_extension.group_admin")
 #     reason = fields.Text('Reason')
+    g_f = fields.Boolean(default=False)
     remark = fields.Text('Remark')   
-    @api.onchange('type_id')
-    def _onchange_use_alias(self):
-        if self.type_id:
-            self.name = self.type_id.name
-            self.current_value = self.type_id.list_price
-            self.qr_code = self.type_id.barcode
+    @api.onchange('product_condi')
+    def _onchange_product_condi(self):
+        if self.product_condi == 'good':
+            self.g_f = True
+        else:
+            self.g_f= False    
             
             
         

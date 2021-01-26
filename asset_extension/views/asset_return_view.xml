@@ -67,12 +67,12 @@
 	                                <field name="line_ids" nolabel="1">
 	                                    <tree editable="bottom">
 	                                        <field name="name" />
-	                                        <field name="type_id" />
-	                                        <field name="qr_code" />
+	                                        <field name="qr_code" required="True"/>
 	                                        <field name="qty" />
 	                                        <field name="current_value"/>
-	                                        <field name="conditions"/>
-	                                        <field name="reason" />
+	                                        <field name="product_condi" />
+	                                        <field name="g_f"  invisible="1" />
+	                                        <field name="reason" attrs="{'invisible':[('g_f', '=', True)]}"/>
 	                                        <field name="remark" />
 	                                    </tree>
 	                                </field>
