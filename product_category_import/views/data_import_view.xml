@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<record id="view_category_import_form" model="ir.ui.view">
+			<field name="name">category Import Form</field>
+			<field name="model">data_import.category</field>
+			<field name="arch" type="xml">
+				<form string="category" version="7.0">
+					<header>
+						<button name="import_data" string="Import category" type="object"
+							class="oe_highlight" />
+						<button name="upload_image" string="Upload Photos" type="object"
+							class="oe_highlight" />
+						<field name="state" widget="statusbar" statusbar_visible="draft,completed,error" />
+					</header>
+					<sheet>
+						<group>
+							<field name="name" />
+							<field name="import_date" />
+							<field name="import_file" filename="import_fname" />
+							<field name="import_fname" invisible="1" class="oe_inline oe_right" />
+							<field name="company_id" />
+							<field name="note" />
+						</group>
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<record id="view_category_import_tree" model="ir.ui.view">
+			<field name="name">Data Import category Tree</field>
+			<field name="model">data_import.category</field>
+			<field name="arch" type="xml">
+				<tree string="Data Import category">
+					<field name="import_date" />
+					<field name="name" />
+					<field name="import_fname" />
+					<field name="note" />
+					<field name="company_id" />
+					<field name="state" />
+				</tree>
+			</field>
+		</record>
+
+		<!-- Action -->
+		<record id="action_category_import" model="ir.actions.act_window">
+			<field name="name">category Import</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">data_import.category</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" ref="view_category_import_tree" />
+		</record>
+
+		<!-- First level menu -->
+		<menuitem id="menu_import_inventory" name="Import"
+			parent="stock.menu_stock_config_settings" sequence="101" />
+		<menuitem id="menu_category_import" name="Category Import"
+			action="action_category_import" parent="menu_import_inventory" sequence="1" />
+		
+	</data>
+</openerp>

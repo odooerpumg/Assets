@@ -7,6 +7,7 @@ from xlrd import open_workbook
 from datetime import datetime,timedelta
 import base64
 import logging
+from odoo import tools
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT
 
 _logger = logging.getLogger(__name__)
@@ -24,6 +25,13 @@ class DataImportAttendance(models.Model):
     import_fname = fields.Char('Filename', size=128)
     import_file = fields.Binary('File', required=True)
     note = fields.Text('Log')
+    
+    
+    
+    def get_default_image(self, image):
+        image_value = tools.image_resize_image_big(open(image, 'rb').read().encode('base64').strip())
+        # image_value = image_value.replace('==', '')
+        return image_value
      
     @api.onchange('import_fname')
     def onchange_import_fname(self):
@@ -62,7 +70,9 @@ class DataImportAttendance(models.Model):
                 p_type = row[5].value
                 user_name = row[6].value
                 qr = row[7].value
-                
+#                 image_medium = row[8].value
+#                 if image_medium:
+#                     image = self.get_default_image(image_medium)
                 bu_obj = self.env['umg.bu']
                 bu_br_obj = bu_obj.search([('name', '=', bu_br)])
                 if not bu_br_obj:
@@ -106,7 +116,7 @@ class DataImportAttendance(models.Model):
                 
                 
                 resp_ob = self.env['res.partner']
-                resp_obj = resp_ob.search([('name', '=', user_name)])
+                resp_obj = resp_ob.search([('name', '=', user_name)], limit=1)
                 if not resp_obj:
                     resp_id = resp_ob.create({'name':user_name})
                     value['user_type'] = resp_id.id
@@ -116,10 +126,12 @@ class DataImportAttendance(models.Model):
                 
                 value['name'] = asset_name
                 value['barcode'] = qr
+#                 value['image_1920'] = image
 #                 else:
 #                     log_msg += '\nRow No %s :: Empty Badge ID ' % rowx
 #                     continue
                 value['row_no'] = rowx
+                value['type'] = 'product'
                 deduction_data.append(value)
  
         for ded in deduction_data:

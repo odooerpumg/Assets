@@ -2,8 +2,8 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_asset_request,asset_request,model_asset_request,asset_extension.group_all_user,1,1,1,1
 access_asset_request_line,asset_request_line,model_asset_request_line,asset_extension.group_all_user,1,1,1,1
 access_asset_bu_br_division,asset_bu_br_division,model_asset_bu_br_division,asset_extension.group_all_user,1,1,1,1
-access_asset_types,asset_types,model_asset_types,asset_extension.group_all_user,1,1,1,1
+,,,,,,,
 access_work_location,work_location,model_work_location,asset_extension.group_all_user,1,1,1,1
-access_asset_model,asset_model,model_asset_model,asset_extension.group_all_user,1,1,1,1
+,,,,,,,
 access_return_asset,return_asset,model_return_asset,asset_extension.group_all_user,1,1,1,1
 access_asset_return_line,asset_return_line,model_asset_return_line,asset_extension.group_all_user,1,1,1,1

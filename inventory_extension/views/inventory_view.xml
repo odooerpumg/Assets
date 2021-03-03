@@ -12,7 +12,33 @@
                 <field name="product_location_id" />
                 <field name="type_id" />
                 <field name="user_type" />
+                <field name="is_damage" />
             </xpath>
+              
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="stock_picking_form_view_inherit1">
+        <field name="name">stock.picking.inherit.form1</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="contact_id" />
+            </xpath>
+              
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="stock_picking_tree_view_inherit1">
+        <field name="name">stock.picking.inherit.tree1</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.vpicktree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='location_dest_id']" position="after">
+                <field name="contact_id" />
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="replace" />
               
         </field>
     </record>

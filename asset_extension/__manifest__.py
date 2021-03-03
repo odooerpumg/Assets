@@ -9,7 +9,7 @@
     'sequence': 60,
     'summary': 'Assets',
     'description': "",
-    'depends': ['product','stock','base','hr'],
+    'depends': ['product','stock','base','hr','fl_auth_signup'],
     'data': [
         'security/security.xml',
         'security/ir.model.access.csv',

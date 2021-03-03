@@ -28,21 +28,30 @@ from odoo.addons.stock.models.stock_move import PROCUREMENT_PRIORITIES
 
 class AssetRequest(models.Model):
 	_name = 'asset.request'
+	_inherit = ['mail.thread', 'mail.activity.mixin']
 	
 	def _get_default_name(self):
 		resp_obj = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)])
 		return resp_obj
+# 	def _get_default_location(self):
+# 		resp_obj = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)])
+# 		return resp_obj
 	
+	name = fields.Char('Name')
 	request_date = fields.Date('Request Date', default=fields.Date.today)
 	request_id = fields.Many2one('hr.employee',string='PIC Name',default=_get_default_name)
-	request_person_id = fields.Many2one('hr.employee',string='Request by Employee')
+	request_person_id = fields.Char(string='Request by Employee')
+	request_emp_id = fields.Char(string='Request by Employee ID')
 	email = fields.Char(related='request_id.work_email',string='Request Person Email')
-	emp_no = fields.Integer(related='request_id.emp_no',string='Employee Number')
+	emp_no = fields.Integer(related='request_id.emp_no',string='Employee ID')
 	ph_no = fields.Char('Phone Number')
 	department_id = fields.Many2one('hr.department', related='request_id.department_id', string='Department Name')
-	bu_id = fields.Many2one('asset.bu.br.division',string='BU / BR / Division Name')
-	asset_type_id = fields.Many2one('asset.types',string='Asset Types')
+	bu_id = fields.Many2one('asset.bu.br.division',string='BU / BR / Division',default=lambda self: self.env.user.bu_id)
+	asset_type_id = fields.Char(string='Asset Types')
 	location_id = fields.Many2one('work.location',string='Office Location')
+	stock_location_dest_id = fields.Many2one('stock.location',string='BU Stock Location',groups="asset_extension.group_ga_pic,asset_extension.group_ga_manager,asset_extension.group_it_pic,asset_extension.group_it_manager,asset_extension.group_management,asset_extension.group_admin")
+	from_location_id = fields.Many2one('stock.location',string='Main Stock Location',groups="asset_extension.group_ga_pic,asset_extension.group_ga_manager,asset_extension.group_it_pic,asset_extension.group_it_manager,asset_extension.group_management,asset_extension.group_admin")
+	transfer_state = fields.Char('Product Transfer State') 
 	state = fields.Selection([
 		('draft', 'Request'),
 		('request', 'Requested'),
@@ -55,7 +64,7 @@ class AssetRequest(models.Model):
 		('cancel', 'Cancelled'),
 		('refuse', 'Refuse'),
 		],
-		'Status',default="draft")
+		'Status',default="draft",tracking=True)
 	is_it = fields.Boolean('Is IT ?',default=False)
 	is_ga = fields.Boolean('Is GA ?',default=False)
 	new_old = fields.Selection([
@@ -64,7 +73,7 @@ class AssetRequest(models.Model):
 		],
 		'Choose New or Old')
 	line_ids = fields.One2many('asset.request.line', 'asset_id', string='Asset Request Line')
-	model_id = fields.Many2one('asset.model', string='Model Name')
+	model_id = fields.Char(string='Model Name')
 	other_info = fields.Text('Other Information')
 	asset_condition = fields.Char('Asset Condition')
 	prev_bu_id = fields.Many2one('asset.bu.br.division', string='Previous BU/BR/Division')
@@ -74,7 +83,13 @@ class AssetRequest(models.Model):
 		],
 		'Choose GA or IT Asset')
 # 	is_management = fields.Boolean('Is Managemenet',default=False)
-
+	
+	@api.model
+	def create(self, vals):
+		res = super(AssetRequest,self).create(vals)
+		res.name = 'RQ'+str(res.id)
+		return res
+	
 	def draft(self):
 		self.write({'state': 'draft'})
 		
@@ -86,6 +101,7 @@ class AssetRequest(models.Model):
 
 	def request(self):
 		self.write({'state': 'request'})
+		
 
 	def manager_approve(self):
 		self.write({'state': 'manager_approve','is_ga': True})
@@ -99,6 +115,7 @@ class AssetRequest(models.Model):
 # 		if self.new_old == 'new':
 # 			self.is_management = True
 		self.write({'state': 'ga_manager_approve'})
+		self.create_transfer()
 		
 
 	def it_approve(self):
@@ -107,28 +124,88 @@ class AssetRequest(models.Model):
 
 	def it_manager_approve(self):
 		self.write({'state': 'it_manager_approve'})
-#		self.create_transfer()
-
+		self.create_transfer()
+		
+	#alert approve function	
+	def alert(self):
+		mail_ids = self.env['mail.activity']
+		model_ids = self.env['ir.model'].search([('model','=','asset.request')])
+		ids = self.request_id.user_id
+		date = self.request_date
+		name = self.name
+		dd = self.ids
+		cc = ''
+		for d in dd:
+			cc += str(d)
+		cc = int(cc)
+		value = {
+	        'activity_type_id': 4,
+	        'date_deadline': date,
+	        'user_id': ids.id,
+	        'res_model_id': model_ids.id,
+	        'res_name': name,
+	        'res_id': cc,
+	    }
+		mail_ids.create(value)
+	
 	def create_transfer(self):
-		res = self.env['stock.picking'].search([('id', '=', 12)])
-# 		datas = { 
-#                  'picking_type_id':5,
-#                  'location_id':8,
-#                  'location_dest_id':8 ,
-# 				 'move_line_ids_without_package':res.move_line_ids_without_package.ids       
-#                     }  
-# 		
-# 		stock_id = self.env['stock.picking'].create(datas)
-		res.action_confirm()
-		res.action_assign()
-		res.button_validate()
+# 		res = self.env['stock.picking'].search([('id', '=', 12)])
+		datas = { 
+				'name':'RQ'+str(self.id),
+				'contact_id':self.request_id.id,
+                 'picking_type_id':10,
+                 'location_id':self.from_location_id.id,
+                 'location_dest_id':self.stock_location_dest_id.id ,
+                 'request_id':self.id
+                    }  
+		stock_id = self.env['stock.picking'].create(datas)
+		res = self.env['asset.request.line'].search([('asset_id', '=', self.id)])
+		for line in res:
+			product = self.env['product.product'].search([('barcode', '=', line.qr_code)])
+			data = { 
+					'name':product.name,
+					'product_id':product.id,
+	                'product_uom_qty':line.qty,
+	                'picking_id':stock_id.id,
+	                'product_uom':product.product_tmpl_id.uom_id.id,
+	                'location_id':self.from_location_id.id,
+	                'location_dest_id':self.stock_location_dest_id.id,
+	                
+	                 
+	                    }  
+			stock_id.env['stock.move'].create(data)
+		stock_id.action_confirm()
+		stock_id.action_assign()
+		stock_id.button_validate()
+		if stock_id.state=='assigned':
+			self.transfer_state = 'Ready'
 
 
 
 class StockPicking(models.Model):
 	_inherit = 'stock.picking'
 	
+# 	request_id = fields.Many2one('asset.request',string='Stock Request')
+# 	contact_id = fields.Many2one('hr.employee',string='Contacts')
+	
+	
+	
+	
+# 	@api.onchange('state')
+# 	def onchange_transfer_state(self):
+# 		if self.request_id:
+# 			res = self.env['asset.request'].search([('id', '=', self.request_id.id)])
+# 			res.update({
+# 					 'transfer_state':self.state
+# 					})
+# 			
+	
 	def button_validate(self):
+		if self.request_id:
+			res = self.env['asset.request'].search([('id', '=', self.request_id.id)])
+			res.update({
+					 'transfer_state':'Done'
+					})
 		self.ensure_one()
 		if not self.move_lines and not self.move_line_ids:
 			raise UserError(_('Please add some items to move.'))
@@ -160,21 +237,20 @@ class StockPicking(models.Model):
 		sms_confirmation = self._check_sms_confirmation_popup()
 		if sms_confirmation:
 			return sms_confirmation
-
-#         if no_quantities_done:
-		view = self.env.ref('stock.view_immediate_transfer')
-		wiz = self.env['stock.immediate.transfer'].create({'pick_ids': [(4, self.id)]})
-		return {
-	        'name': _('Immediate Transfer?'),
-	        'type': 'ir.actions.act_window',
-	        'view_mode': 'form',
-	        'res_model': 'stock.immediate.transfer',
-	        'views': [(view.id, 'form')],
-	        'view_id': view.id,
-	        'target': 'new',
-	        'res_id': wiz.id,
-	        'context': self.env.context,
-	    }
+		if no_quantities_done:
+			view = self.env.ref('stock.view_immediate_transfer')
+			wiz = self.env['stock.immediate.transfer'].create({'pick_ids': [(4, self.id)]})
+			return {
+		        'name': _('Immediate Transfer?'),
+		        'type': 'ir.actions.act_window',
+		        'view_mode': 'form',
+		        'res_model': 'stock.immediate.transfer',
+		        'views': [(view.id, 'form')],
+		        'view_id': view.id,
+		        'target': 'new',
+		        'res_id': wiz.id,
+		        'context': self.env.context,
+		    }
 		if self._get_overprocessed_stock_moves() and not self._context.get('skip_overprocessed_check'):
 			view = self.env.ref('stock.view_overprocessed_transfer')
 			wiz = self.env['stock.overprocessed.transfer'].create({'picking_id': self.id})
@@ -196,11 +272,6 @@ class StockPicking(models.Model):
 		return
 		
 
-	
-	
-	
-
-
 
 class AssetRequestLine(models.Model):
 	_name = 'asset.request.line'
@@ -217,12 +288,12 @@ class AssetBusinessUnit(models.Model):
 
 	name = fields.Char('Name')
 
-class AssetTypes(models.Model):
-	_name = 'asset.types'
-
-	name = fields.Char('Name')
-
-class AssetModel(models.Model):
-	_name = 'asset.model'
-
-	name = fields.Char('Name')
+# class AssetTypes(models.Model):
+# 	_name = 'asset.types'
+# 
+# 	name = fields.Char('Name')
+# 
+# class AssetModel(models.Model):
+# 	_name = 'asset.model'
+# 
+# 	name = fields.Char('Name')

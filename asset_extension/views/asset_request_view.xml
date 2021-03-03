@@ -13,14 +13,17 @@
         <field name="model">asset.request</field>
         <field name="arch" type="xml">
             <tree>
+                <field name="name" />
                 <field name="request_date"/>
                 <field name="request_id"/>
                 <field name="emp_no"/>
                 <field name="department_id"/>
                 <field name="bu_id"/>
                 <field name="request_person_id"/>
+                <field name="request_emp_id"/>
                 <field name="asset_type_id"/>
                 <field name="state"/>
+                <field name="transfer_state" />
                 <field name="ga_it" />
             </tree>
         </field>
@@ -29,7 +32,7 @@
         <field name="name">Asset Request Form</field>
         <field name="model">asset.request</field>
         <field name="arch" type="xml">
-            <form string="Asset Request">
+            <form string="Asset Request" >
                 <header>
                     <button string="Request" name="request" states="draft" type="object" class="oe_highlight"/>
 
@@ -49,37 +52,39 @@
 
 <!--                     <button string="Management Approved" name="approve" states="it_manager_approve,ga_manager_approve" type="object" attrs="{'invisible':[('is_management', '!=', True)]}" class="oe_highlight" groups="asset_extension.group_management,asset_extension.group_admin" /> -->
 
-                    <button string="Send to Draft" name="draft" states="manager_approve,ga_approve,ga_manager_approve,it_approve,it_manager_approve,validate" type="object" class="oe_highlight" groups="asset_extension.group_ga_pic,asset_extension.group_admin"/>
+                    <button string="Send to Draft" name="draft" type="object" class="oe_highlight" groups="asset_extension.group_manager,asset_extension.group_ga_manager,asset_extension.group_it_manager,asset_extension.group_admin"/>
 
-                    <button string="Refuse" name="refuse" states="manager_approve,ga_approve,ga_manager_approve,it_approve,it_manager_approve,validate" type="object" class="oe_highlight"/>
+                    <button string="Refuse" name="refuse" states="ga_manager_approve,it_manager_approve" type="object" class="oe_highlight" groups="asset_extension.group_manager,asset_extension.group_ga_manager,asset_extension.group_it_manager,asset_extension.group_admin"/>
 <!-- groups="asset_extension.group_manager,asset_extension.group_ga_pic,asset_extension.group_ga_manager,asset_extension.group_it_manager,asset_extension.group_management,asset_extension.group_admin"  -->
  <!-- groups="asset_extension.group_all_user,asset_extension.group_manager,asset_extension.group_ga_pic,asset_extension.group_ga_manager,asset_extension.group_it_pic,asset_extension.group_it_manager,asset_extension.group_management,asset_extension.group_admin" -->
                      <!-- attrs="{'invisible':[('state', 'not in',('request','validate'))]}" -->
 
-                    <button string="Cancel" name="cancel" states="manager_approve,ga_approve,ga_manager_approve,it_approve,it_manager_approve,validate" type="object" />
+                    <button string="Cancel" name="cancel"  type="object" groups="asset_extension.group_manager,asset_extension.group_ga_manager,asset_extension.group_it_manager,asset_extension.group_admin"/>
 
-                    <field name="state" widget="statusbar" statusbar_visible="draft,request,manager_approve,ga_approve,ga_manager_approve,validate" statusbar_colors='{"draft":"blue","request":"blue","manager_approve":"blue","ga_approve":"blue","ga_manager_approve":"blue","it_approve":"blue","it_manager_approve":"blue","validate":"blue","refuse":"red"}'/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,request,manager_approve,ga_approve,ga_manager_approve,it_manager_approve,it_approve,it_manager_approve" statusbar_colors='{"draft":"blue","request":"blue","manager_approve":"blue","ga_approve":"blue","ga_manager_approve":"blue","it_approve":"blue","it_manager_approve":"blue","validate":"blue","refuse":"red"}'/>
                 </header>
                 <sheet>
-<!--                     <div name="button_box" class="oe_button_box"> -->
-<!--                         <button name="%(product.product_template_action)d" class="oe_stat_button" icon="fa-building-o" type="action"  attrs="{'invisible':[('is_ga', '!=', True)]}"> -->
-<!--                             Products -->
-<!--                             <field name="invoice_count" widget="statinfo" string="Invoices"/> -->
-<!--                         </button> -->
-<!--                     </div> -->
+                    <div name="button_box" class="oe_button_box">
+                        <button name="%(product.product_template_action)d" class="oe_stat_button" icon="fa-building-o" type="action"  attrs="{'invisible':[('is_ga', '!=', True)]}" groups="asset_extension.group_ga_pic,asset_extension.group_ga_manager,asset_extension.group_it_pic,asset_extension.group_it_manager,asset_extension.group_management,asset_extension.group_admin">
+                            Products
+                        </button>
+                    </div>
                     <group name="request_info" string="Request Information">
-                        <group>
+                        <group  attrs="{'readonly': [('state', '!=', 'draft')]}">
                             <field name="request_date" />
                             <field name="request_id" options="{'no_create_edit': True}" required="1" />
                             <field name="emp_no"  invisible="0" />
                             <field name="department_id" options="{'no_create_edit': True}" />
                             <field name="ph_no" />
-                            <field name="bu_id" options="{'no_create_edit': True}" />
+                            <field name="bu_id" options="{'no_create_edit': True}" readonly="True"/>
                             <field name="location_id" options="{'no_create_edit': True}" />
                             <field name="request_person_id"/>
+                            <field name="request_emp_id"/>
+                            <field name="from_location_id" required="1"/>
+                            <field name="stock_location_dest_id" required="1"/>
                             <field name="ga_it" required="1" />
                             <field name="is_ga"  invisible="1" />
-                            <field name="new_old" attrs="{'invisible':[('is_ga', '=', False)],'required': [('is_ga', '=', True)]}" />
+                            <field name="new_old" attrs="{'invisible':[('is_ga', '=', False)]}" />
                         </group>
                     </group>
                     <group name="arrange_ga" string="Arrange from GA Department" groups="asset_extension.group_ga_pic,asset_extension.group_ga_manager,asset_extension.group_it_pic,asset_extension.group_it_manager,asset_extension.group_management,asset_extension.group_admin">
@@ -107,6 +112,11 @@
                         </page>
                     </notebook>
                 </sheet>
+                <div class="oe_chatter" modifiers="{}">
+					<field name="message_follower_ids" widget="mail_followers" modifiers="{}"/>
+					<field name="activity_ids" widget="mail_activity" modifiers="{}"/>
+					<field name="message_ids" widget="mail_thread" modifiers="{}" options="{'display_log_button': True}"/>
+				</div>
             </form>
         </field>
     </record>
@@ -122,35 +132,35 @@
 
     <!-- Type -->
 
-    <record model="ir.ui.view" id="view_asset_types_tree">
-        <field name="name">Asset Type List</field>
-        <field name="model">asset.types</field>
-        <field name="arch" type="xml">
-            <tree>
-                <field name="name"/>
-            </tree>
-        </field>
-    </record>
-    <record model="ir.ui.view" id="view_form_asset_type">
-        <field name="name">Asset Type Form</field>
-        <field name="model">asset.types</field>
-        <field name="arch" type="xml">
-            <form string="Asset Type">
-                <group>
-                    <field name="name" />
-                </group>
-            </form>
-        </field>
-    </record>
-    <record id="action_asset_type" model="ir.actions.act_window">
-        <field name="name">Asset Type</field>
-        <field name="type">ir.actions.act_window</field>
-        <field name="res_model">asset.types</field>
-        <field name="view_mode">tree,form</field>
-        <field name="view_id" ref="view_asset_types_tree" />
-    </record>
+<!--     <record model="ir.ui.view" id="view_asset_types_tree"> -->
+<!--         <field name="name">Asset Type List</field> -->
+<!--         <field name="model">asset.types</field> -->
+<!--         <field name="arch" type="xml"> -->
+<!--             <tree> -->
+<!--                 <field name="name"/> -->
+<!--             </tree> -->
+<!--         </field> -->
+<!--     </record> -->
+<!--     <record model="ir.ui.view" id="view_form_asset_type"> -->
+<!--         <field name="name">Asset Type Form</field> -->
+<!--         <field name="model">asset.types</field> -->
+<!--         <field name="arch" type="xml"> -->
+<!--             <form string="Asset Type"> -->
+<!--                 <group> -->
+<!--                     <field name="name" /> -->
+<!--                 </group> -->
+<!--             </form> -->
+<!--         </field> -->
+<!--     </record> -->
+<!--     <record id="action_asset_type" model="ir.actions.act_window"> -->
+<!--         <field name="name">Asset Type</field> -->
+<!--         <field name="type">ir.actions.act_window</field> -->
+<!--         <field name="res_model">asset.types</field> -->
+<!--         <field name="view_mode">tree,form</field> -->
+<!--         <field name="view_id" ref="view_asset_types_tree" /> -->
+<!--     </record> -->
 
-    <menuitem id="menu_add_asset_type" name="Asset Types" action="action_asset_type" parent="menu_configuration_menu" sequence="1" />
+<!--     <menuitem id="menu_add_asset_type" name="Asset Types" action="action_asset_type" parent="menu_configuration_menu" sequence="1" /> -->
 
     <!-- <menuitem id="menu_add_asset_type_in_reporting" name="Asset Types" action="action_asset_type" parent="menu_reporting" sequence="1" /> -->
 
@@ -186,34 +196,34 @@
 
     <menuitem id="menu_add_asset_asset_model_division" name="BU BR Division" action="action_asset_bu_br_division" parent="menu_configuration_menu" sequence="1" />
     
-    <record model="ir.ui.view" id="view_asset_model_tree">
-        <field name="name">Asset Model Tree</field>
-        <field name="model">asset.model</field>
-        <field name="arch" type="xml">
-            <tree>
-                <field name="name"/>
-            </tree>
-        </field>
-    </record>
-    <record model="ir.ui.view" id="view_form_asset_model">
-        <field name="name">Asset Model Form</field>
-        <field name="model">asset.model</field>
-        <field name="arch" type="xml">
-            <form string="Asset Model">
-                <group>
-                    <field name="name" />
-                </group>
-            </form>
-        </field>
-    </record>
-    <record id="action_asset_model" model="ir.actions.act_window">
-        <field name="name">Asset Model</field>
-        <field name="type">ir.actions.act_window</field>
-        <field name="res_model">asset.model</field>
-        <field name="view_mode">tree,form</field>
-        <field name="view_id" ref="view_asset_model_tree" />
-    </record>
+<!--     <record model="ir.ui.view" id="view_asset_model_tree"> -->
+<!--         <field name="name">Asset Model Tree</field> -->
+<!--         <field name="model">asset.model</field> -->
+<!--         <field name="arch" type="xml"> -->
+<!--             <tree> -->
+<!--                 <field name="name"/> -->
+<!--             </tree> -->
+<!--         </field> -->
+<!--     </record> -->
+<!--     <record model="ir.ui.view" id="view_form_asset_model"> -->
+<!--         <field name="name">Asset Model Form</field> -->
+<!--         <field name="model">asset.model</field> -->
+<!--         <field name="arch" type="xml"> -->
+<!--             <form string="Asset Model"> -->
+<!--                 <group> -->
+<!--                     <field name="name" /> -->
+<!--                 </group> -->
+<!--             </form> -->
+<!--         </field> -->
+<!--     </record> -->
+<!--     <record id="action_asset_model" model="ir.actions.act_window"> -->
+<!--         <field name="name">Asset Model</field> -->
+<!--         <field name="type">ir.actions.act_window</field> -->
+<!--         <field name="res_model">asset.model</field> -->
+<!--         <field name="view_mode">tree,form</field> -->
+<!--         <field name="view_id" ref="view_asset_model_tree" /> -->
+<!--     </record> -->
 
-    <menuitem id="menu_add_asset_model" name="Asset Model" action="action_asset_model" parent="menu_configuration_menu" sequence="3" />
+<!--     <menuitem id="menu_add_asset_model" name="Asset Model" action="action_asset_model" parent="menu_configuration_menu" sequence="3" /> -->
     
  </odoo>
