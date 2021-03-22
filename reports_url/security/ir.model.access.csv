@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+all_assets_report_url_user,all_assets_report_url_user,model_all_assets_report_url,base.group_user,1,1,1,1
+all_request_report_url_user,all_request_report_url_user,model_all_request_report_url,base.group_user,1,1,1,1
+all_return_report_url_user,all_return,model_all_return_report_url,base.group_user,1,1,1,1

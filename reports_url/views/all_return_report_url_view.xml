@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+         
+		<!-- Report Form -->
+		<record id="view_all_return_report_url_form" model="ir.ui.view">
+			<field name="name">All Return Report URL</field>
+			<field name="model">all_return.report.url</field>
+			<field name="arch" type="xml">
+				<form string="All Return Report URL">
+					<sheet>
+						<separator string="Report Form" />
+						<group>
+							<field name="url_name" />
+							<field name='url_link'/>							
+						</group>
+					</sheet>
+				</form>
+			</field>
+		</record>        
+		
+		<!-- Report URL Tree -->
+		<record id="view_all_return_report_url_tree" model="ir.ui.view">
+			<field name="name">All Return Report URL</field>
+			<field name="model">all_return.report.url</field>
+			<field name="arch" type="xml">
+				<tree string="All Return Report URL">
+					<button name="go_report" string="Run Report" icon="fa-play" type="object" />
+					<field name="url_name" />
+					<field name="url_link"/>
+				</tree>
+			</field>
+		</record>
+
+		<!-- Report URL Action -->
+		<record id="all_return_url_action" model="ir.actions.act_window">
+			<field name="name">All Return Report URL</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">all_return.report.url</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" ref="view_all_return_report_url_tree" />
+		</record>
+
+		<menuitem id="menu_all_return_report_url" web_icon="reports_url,static/description/report.png"
+			action="all_return_url_action" name="All Return Report"
+			parent="asset_extension.menu_reporting" sequence="3" />	    
+	    		
+	</data>
+</openerp>
