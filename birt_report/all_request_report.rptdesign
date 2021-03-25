@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.23" id="1">
+    <property name="createdBy">Eclipse BIRT Designer Version 4.5.0.v201506092134 Build &lt;@BUILD@></property>
+    <property name="units">in</property>
+    <property name="iconFile">/templates/blank_report.gif</property>
+    <property name="bidiLayoutOrientation">ltr</property>
+    <property name="imageDPI">96</property>
+    <list-property name="libraries">
+        <structure>
+            <property name="fileName">birt_report/report_library.rptlibrary</property>
+            <property name="namespace">report_library</property>
+        </structure>
+    </list-property>
+    <data-sources>
+        <oda-data-source extensionID="org.eclipse.birt.report.data.oda.jdbc" name="Data Source" id="74"
+ extends="report_library.Data Source"/>
+    </data-sources>
+    <data-sets>
+        <oda-data-set extensionID="org.eclipse.birt.report.data.oda.jdbc.JdbcSelectDataSet" name="Data Set" id="73">
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">req_name</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">req_name</text-property>
+                    <text-property name="heading">req_name</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">from_lo</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">from_lo</text-property>
+                    <text-property name="heading">from_lo</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">to_lo</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">to_lo</text-property>
+                    <text-property name="heading">to_lo</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">name</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">name</text-property>
+                    <text-property name="heading">name</text-property>
+                </structure>
+            </list-property>
+            <list-property name="parameters"/>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">req_name</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">from_lo</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">3</property>
+                        <property name="name">to_lo</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">4</property>
+                        <property name="name">name</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">Data Source</property>
+            <list-property name="resultSet">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">req_name</property>
+                    <property name="nativeName">req_name</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">from_lo</property>
+                    <property name="nativeName">from_lo</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">3</property>
+                    <property name="name">to_lo</property>
+                    <property name="nativeName">to_lo</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">4</property>
+                    <property name="name">name</property>
+                    <property name="nativeName">name</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+            </list-property>
+            <xml-property name="queryText"><![CDATA[select ar.name req_name,sl1.name from_lo,sl2.name to_lo,arl.name from asset_request ar
+left join stock_location sl1 on ar.from_location_id = sl1.id 
+left join stock_location sl2 on ar.stock_location_dest_id = sl2.id
+left join asset_request_line arl on arl.asset_id = ar.id]]></xml-property>
+        </oda-data-set>
+    </data-sets>
+    <page-setup>
+        <simple-master-page name="Simple MasterPage" id="2">
+            <page-footer>
+                <text id="3">
+                    <property name="contentType">html</property>
+                    <text-property name="content"><![CDATA[<value-of>new Date()</value-of>]]></text-property>
+                </text>
+            </page-footer>
+        </simple-master-page>
+    </page-setup>
+    <body>
+        <table id="114">
+            <property name="dataSet">Data Set</property>
+            <list-property name="boundDataColumns">
+                <structure>
+                    <property name="name">req_name</property>
+                    <text-property name="displayName">req_name</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["req_name"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">from_lo</property>
+                    <text-property name="displayName">from_lo</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["from_lo"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">to_lo</property>
+                    <text-property name="displayName">to_lo</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["to_lo"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">name</property>
+                    <text-property name="displayName">name</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["name"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <column id="138"/>
+            <column id="139"/>
+            <column id="140"/>
+            <column id="141"/>
+            <header>
+                <row id="115">
+                    <cell id="116">
+                        <label id="117">
+                            <text-property name="text">req_name</text-property>
+                        </label>
+                    </cell>
+                    <cell id="118">
+                        <label id="119">
+                            <text-property name="text">from_lo</text-property>
+                        </label>
+                    </cell>
+                    <cell id="120">
+                        <label id="121">
+                            <text-property name="text">to_lo</text-property>
+                        </label>
+                    </cell>
+                    <cell id="122">
+                        <label id="123">
+                            <text-property name="text">name</text-property>
+                        </label>
+                    </cell>
+                </row>
+            </header>
+            <group id="147">
+                <property name="groupName">req_name</property>
+                <expression name="keyExpr" type="javascript">row["req_name"]</expression>
+                <structure name="toc">
+                    <expression name="expressionValue" type="javascript">row["req_name"]</expression>
+                </structure>
+                <property name="hideDetail">false</property>
+                <header>
+                    <row id="148">
+                        <cell id="149"/>
+                        <cell id="150"/>
+                        <cell id="151"/>
+                        <cell id="152"/>
+                    </row>
+                </header>
+                <footer>
+                    <row id="153">
+                        <cell id="154"/>
+                        <cell id="155"/>
+                        <cell id="156"/>
+                        <cell id="157"/>
+                    </row>
+                </footer>
+            </group>
+            <detail>
+                <row id="124">
+                    <cell id="125">
+                        <data id="158">
+                            <property name="resultSetColumn">req_name</property>
+                        </data>
+                    </cell>
+                    <cell id="127">
+                        <data id="128">
+                            <property name="resultSetColumn">from_lo</property>
+                        </data>
+                    </cell>
+                    <cell id="129">
+                        <data id="130">
+                            <property name="resultSetColumn">to_lo</property>
+                        </data>
+                    </cell>
+                    <cell id="131"/>
+                </row>
+                <row id="142">
+                    <cell id="143"/>
+                    <cell id="144"/>
+                    <cell id="145"/>
+                    <cell id="146">
+                        <data id="132">
+                            <property name="resultSetColumn">name</property>
+                        </data>
+                    </cell>
+                </row>
+            </detail>
+            <footer>
+                <row id="133">
+                    <cell id="134"/>
+                    <cell id="135"/>
+                    <cell id="136"/>
+                    <cell id="137"/>
+                </row>
+            </footer>
+        </table>
+    </body>
+</report>

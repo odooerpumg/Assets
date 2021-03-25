@@ -185,7 +185,7 @@
                 </ex-property>
             </list-property>
             <property name="odaDriverClass">org.postgresql.Driver</property>
-            <property name="odaURL">jdbc:postgresql://localhost:5433/HI5_Assets</property>
+            <property name="odaURL">jdbc:postgresql://localhost:5433/hi5Asset_Testing</property>
             <property name="odaUser">odoo</property>
             <encrypted-property name="odaPassword" encryptionID="base64">YWRtaW4=</encrypted-property>
             <property name="odaJndiName">java:comp/env/jdbc/ReportDB</property>
